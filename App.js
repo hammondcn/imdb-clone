@@ -1,21 +1,59 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react'
+import * as SplashScreen from 'expo-splash-screen'
+import * as Font from 'expo-font'
+import { Ionicons } from '@expo/vector-icons'
+import { Image, useColorScheme } from 'react-native'
+import { Asset } from 'expo-asset'
+import { NavigationContainer } from '@react-navigation/native'
+import Root from './navigation/Root'
+import { DarkTheme, lightTheme } from './theme'
+import { ThemeProvider } from 'styled-components/native'
+
+// SplashScreen.preventAutoHideAsync()
+
+const loadFonts = (fonts) => fonts.map((font) => Font.loadAsync(font))
+const loadImages = (images) =>
+  images.map((image) => {
+    if (typeof image === 'string') {
+      return Image.prefetch(image)
+    } else {
+      return Asset.loadAsync(image)
+    }
+  })
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+  const [ready, setReady] = useState(false)
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+  useEffect(() => {
+    async function prepare() {
+      try {
+        // Pre-load fonts, make any API calls you need to do here
+        const fonts = loadFonts([Ionicons.font])
+        const assets = loadImages(['https://reactnative.dev/img/oss_logo.svg'])
+        await Promise.all([...fonts, ...assets])
+      } catch (e) {
+        // console.log(e)
+        // console.error(e.message)
+      } finally {
+        // Tell the application to render
+        setReady(true)
+      }
+    }
+
+    prepare()
+  }, [])
+  const isDark = useColorScheme() === 'dark'
+
+  //  launch screen remain visible until it has been explicitly told hide
+  if (!ready) {
+    return null
+  }
+
+  return (
+    <ThemeProvider theme={isDark ? DarkTheme : lightTheme}>
+      <NavigationContainer>
+        <Root />
+      </NavigationContainer>
+    </ThemeProvider>
+  )
+}

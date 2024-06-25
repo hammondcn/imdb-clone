@@ -2,7 +2,11 @@
   "expo": {
     "name": "imdb-clone",
     "slug": "imdb-clone",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "plugins": [
+      "expo-font",
+      "expo-asset"
+    ]
   },
   "name": "imdb-clone"
 }
