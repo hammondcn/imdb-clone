@@ -10,12 +10,6 @@ import VMedia from '../components/VMedia'
 
 
 
-const Container = styled.ScrollView`
-  flex: 1;
-`
-
-
-
 const { height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 
@@ -34,17 +28,34 @@ const HSeparator = styled.View`
   height: 20px;
 `
 
-
+const VSeparator = styled.View`
+  width: 20px;
+`
 
 const TrendingScroll = styled.FlatList`
   padding-start: 20px;
   padding-top: 10px;
 `
 
+const movieKeyExtractor = (item) => item.id + ""
 
+const renderVMedia = ({item}) => (
+  <VMedia 
 
+    posterPath={item.poster_path}
+    title={item.title}
+    voteAverage={item.vote_average}
+  />
+)
 
-
+const renderHMedia = ({item}) => (
+  <HMedia 
+  posterPath={item.poster_path}
+  title={item.title}
+  releaseDate={item.release_date}
+  overview={item.overview}
+/>
+)
 
 
 const options = {
@@ -118,6 +129,9 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = ({
     setIsRefreshing(false)
   }
 
+
+
+  
   return loading ? (
     <Loader/>
   ) : (
@@ -149,30 +163,18 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = ({
         horizontal
         showsHorizontalScrollIndicator={false} 
         contentContainerStyle={{paddingEnd: 20}}
-        ItemSeparatorComponent={() => <View style={{width: 20}}/>}
-        keyExtractor={(item) => item.id + ""}
+        ItemSeparatorComponent={VSeparator}
+        keyExtractor={movieKeyExtractor}
         data={trending}
-        renderItem={({item}) => (
-          <VMedia 
-
-            posterPath={item.poster_path}
-            title={item.title}
-            voteAverage={item.vote_average}
-          />
-        )}
+        renderItem={renderVMedia}
       />
       <ComingSoonTitle>Upcoming Movies</ComingSoonTitle>
 
       </>}
+      
       data={upComing}
-      renderItem={({item}) => (
-        <HMedia 
-        posterPath={item.poster_path}
-        title={item.title}
-        releaseDate={item.release_date}
-        overview={item.overview}
-      />
-      )}
+      renderItem={renderHMedia}
+      keyExtractor={movieKeyExtractor}
       ItemSeparatorComponent={HSeparator}
       />
       
