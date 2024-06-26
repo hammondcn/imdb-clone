@@ -1,22 +1,19 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import React, { useEffect, useState } from 'react'
-import { ActivityIndicator, Dimensions } from 'react-native'
+import { Dimensions, RefreshControl } from 'react-native'
 import Swiper from 'react-native-swiper'
-
 import styled from 'styled-components/native'
 import Slide from '../components/Slide'
-import Poster from '../components/Poster'
+import HMedia from '../components/HMedia'
+import VMovie from '../components/VMedia'
+import Loader from '../components/Loader'
 
 
 const Container = styled.ScrollView`
   flex: 1;
 `
 
-const Loader = styled.View`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-`
+
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window')
 
@@ -34,53 +31,11 @@ const TrendingScroll = styled.ScrollView`
   padding-top: 10px;
 `
 
-const Movie = styled.View`
-  margin-right: 20px;
-  align-items: center;
-`
 
-const Title = styled.Text`
-  color: white;
-  font-size:14px;
-  margin-top: 7px;
-  margin-bottom: 5px;
-`
-
-
-const Vote = styled.Text`
-  color: white;
-  opacity: .8;
-  font-size: 12px;
-`
 
 const ComingScroll = styled.ScrollView``
 
-const HMovie = styled.View`
-  padding: 0 20px;
-  flex-direction: row;
-  margin-top: 20px;
-`
 
-const Column = styled.View`
-  margin-left: 15px;
-  width: 80%;
-
-`
-
-const Release = styled.Text`
-  color: white;
-  opacity: .8;
-  font-size: 12px;
-  margin-top: 5px;
-  margin-bottom: 7px;
-`
-
-const Overview = styled.Text`
-   color: white;
-  opacity: .8;
-  width: 80%;
-
-`
 
 
 const options = {
@@ -95,6 +50,8 @@ const options = {
 const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = ({
   navigation: { navigate },
 }) => {
+
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const [loading, setLoading] = useState(true);
 
   const [nowPlaying, setNowPlaying] = useState([])
@@ -146,12 +103,20 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = ({
     getData()
   }, [])
 
+  const handlrRefresh = async() => {
+    setIsRefreshing(true)
+    await getData()
+    setIsRefreshing(false)
+  }
+
   return loading ? (
-    <Loader>
-      <ActivityIndicator size="large" />
-    </Loader>
+    <Loader/>
   ) : (
-    <Container>
+    <Container 
+      refreshControl={
+        <RefreshControl onRefresh={handlrRefresh} refreshing={isRefreshing}/>
+      }
+    >
       <Swiper
         containerStyle={{ height: SCREEN_HEIGHT / 4 }}
         horizontal={true}
@@ -174,26 +139,22 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = ({
       </Swiper>
       <ListTitle>Trending Movies</ListTitle>
       <TrendingScroll horizontal showsHorizontalScrollIndicator={false} >{trending.map(movie => (
-        <Movie>
-          <Poster key={movie.id} posterPath={movie.poster_path}/>
-          <Title>
-            {movie.title.slice(0,13)}
-            {movie.title.length > 13 ? "..." : null}
-          </Title>
-          <Vote>{movie.vote_average > 0 ? `⭐️ ${movie.vote_average.toFixed(1)} / 10` : 'coming soon'}</Vote>
-        </Movie>
+        <VMovie 
+          key={movie.id} 
+          posterPath={movie.poster_path}
+          title={movie.title}
+          voteAverage={movie.vote_average}
+        />
       ))}</TrendingScroll>
       <ListTitle>Coming Soon</ListTitle>
       <ComingScroll horizontal={false}>
       {upComing.map(movie => (
-        <HMovie>
-          <Poster posterPath={movie.poster_path}/>
-          <Column>
-          <Title>{movie.title}</Title>
-          <Release>{new Date(movie.release_date).toLocaleDateString("cn",{month: 'short', day: 'numeric', year: 'numeric'})}</Release>
-          <Overview>{movie.overview !== '' && movie.overview.length > 100 ? movie.overview.slice(0,100) + '...' : movie.overview}</Overview>
-          </Column>
-        </HMovie>
+        <HMedia 
+          posterPath={movie.poster_path}
+          title={movie.title}
+          releaseDate={movie.release_date}
+          overview={movie.overview}
+        />
       ))}
       </ComingScroll>
     </Container>
