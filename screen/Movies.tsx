@@ -7,7 +7,7 @@ import Slide from '../components/Slide'
 import HMedia from '../components/HMedia'
 import Loader from '../components/Loader'
 import VMedia from '../components/VMedia'
-import { useQuery } from 'react-query'
+import { QueryClient, useQuery, useQueryClient } from 'react-query'
 import { moviesApi } from '../api'
 
 
@@ -74,23 +74,30 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = ({
 }) => {
 
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const {isLoading:nowPlayingLoading, data:nowPlayingData} = useQuery('nowPlaying', moviesApi.nowPlaying)
-  const {isLoading:upComingLoading, data:upComingData} = useQuery('upComing', moviesApi.upComing)
-  const {isLoading:trendingLoading, data:trendingData} = useQuery('trending', moviesApi.trending)
+  const {isLoading:nowPlayingLoading, data:nowPlayingData, isRefetching:isRefetchingNowPlaying} = useQuery(['movies','nowPlaying'], moviesApi.nowPlaying)
+  const {isLoading:upComingLoading, data:upComingData, isRefetching:isRefetchingUpComing} = useQuery(['movies','upComing'], moviesApi.upComing)
+  const {isLoading:trendingLoading, data:trendingData, isRefetching:isRefetchingTrending} = useQuery(['movies','trending'], moviesApi.trending)
+  const queryClient = useQueryClient()
 
-
-  // const handlrRefresh = async() => {
- 
-  // }
-
-
-  const loading = nowPlayingLoading || upComingLoading || trendingLoading
   
+  
+  const loading = nowPlayingLoading || upComingLoading || trendingLoading
+  const isRefetching = isRefetchingNowPlaying || isRefetchingUpComing || isRefetchingTrending
+  console.log(isRefetching)
+
+
+  const handleRefresh = async() => {
+    setIsRefreshing(true)
+    queryClient.refetchQueries(['movies'])
+    setIsRefreshing(false)
+  }
+
   return loading ? (
     <Loader/>
   ) : (
     <FlatList 
-
+      onRefresh={handleRefresh}
+      refreshing={isRefreshing}
       ListHeaderComponent={<>
         <Swiper
         containerStyle={{ height: SCREEN_HEIGHT / 4 }}
