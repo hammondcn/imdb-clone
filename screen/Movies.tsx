@@ -9,6 +9,7 @@ import Loader from '../components/Loader';
 import VMedia from '../components/VMedia';
 import { useQuery, useQueryClient } from 'react-query';
 import { Movie, MovieResponse, moviesApi } from '../api';
+import HList from '../components/HList';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -113,16 +114,7 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = ({
 							/>
 						))}
 					</Swiper>
-					<ListTitle>Trending Movies</ListTitle>
-					<TrendingScroll
-						horizontal
-						showsHorizontalScrollIndicator={false}
-						contentContainerStyle={{ paddingEnd: 20 }}
-						ItemSeparatorComponent={VSeparator}
-						keyExtractor={movieKeyExtractor}
-						data={trendingData?.results}
-						renderItem={renderVMedia}
-					/>
+					<HList title="Trending Movies" data={trendingData.results} />
 					<ComingSoonTitle>Upcoming Movies</ComingSoonTitle>
 				</>
 			}
