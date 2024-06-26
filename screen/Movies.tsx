@@ -1,12 +1,13 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import React, { useEffect, useState } from 'react'
-import { Dimensions, RefreshControl } from 'react-native'
+import { Dimensions, FlatList, RefreshControl, View } from 'react-native'
 import Swiper from 'react-native-swiper'
 import styled from 'styled-components/native'
 import Slide from '../components/Slide'
 import HMedia from '../components/HMedia'
-import VMovie from '../components/VMedia'
 import Loader from '../components/Loader'
+import VMedia from '../components/VMedia'
+
 
 
 const Container = styled.ScrollView`
@@ -22,18 +23,26 @@ const ListTitle = styled.Text`
   color:white;
   font-size:18px;
   font-weight:600;
-  margin-top:20px;
-  margin-start: 20px;
+  margin: 20px 0 10px 20px;
 `
 
-const TrendingScroll = styled.ScrollView`
+const ComingSoonTitle = styled(ListTitle)`
+  
+`
+
+const HSeparator = styled.View`
+  height: 20px;
+`
+
+
+
+const TrendingScroll = styled.FlatList`
   padding-start: 20px;
   padding-top: 10px;
 `
 
 
 
-const ComingScroll = styled.ScrollView``
 
 
 
@@ -94,7 +103,7 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = ({
   }
 
   const getData = async () => {
-    await Promise.all(getNowPlaying(),getUpComing(),getTrending())
+    await Promise.all([getNowPlaying(),getUpComing(),getTrending()])
     setLoading(false)
   }
 
@@ -112,12 +121,10 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = ({
   return loading ? (
     <Loader/>
   ) : (
-    <Container 
-      refreshControl={
-        <RefreshControl onRefresh={handlrRefresh} refreshing={isRefreshing}/>
-      }
-    >
-      <Swiper
+    <FlatList 
+
+      ListHeaderComponent={<>
+        <Swiper
         containerStyle={{ height: SCREEN_HEIGHT / 4 }}
         horizontal={true}
         loop
@@ -138,26 +145,41 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = ({
         ))}
       </Swiper>
       <ListTitle>Trending Movies</ListTitle>
-      <TrendingScroll horizontal showsHorizontalScrollIndicator={false} >{trending.map(movie => (
-        <VMovie 
-          key={movie.id} 
-          posterPath={movie.poster_path}
-          title={movie.title}
-          voteAverage={movie.vote_average}
-        />
-      ))}</TrendingScroll>
-      <ListTitle>Coming Soon</ListTitle>
-      <ComingScroll horizontal={false}>
-      {upComing.map(movie => (
+      <TrendingScroll
+        horizontal
+        showsHorizontalScrollIndicator={false} 
+        contentContainerStyle={{paddingEnd: 20}}
+        ItemSeparatorComponent={() => <View style={{width: 20}}/>}
+        keyExtractor={(item) => item.id + ""}
+        data={trending}
+        renderItem={({item}) => (
+          <VMedia 
+
+            posterPath={item.poster_path}
+            title={item.title}
+            voteAverage={item.vote_average}
+          />
+        )}
+      />
+      <ComingSoonTitle>Upcoming Movies</ComingSoonTitle>
+
+      </>}
+      data={upComing}
+      renderItem={({item}) => (
         <HMedia 
-          posterPath={movie.poster_path}
-          title={movie.title}
-          releaseDate={movie.release_date}
-          overview={movie.overview}
-        />
-      ))}
-      </ComingScroll>
-    </Container>
+        posterPath={item.poster_path}
+        title={item.title}
+        releaseDate={item.release_date}
+        overview={item.overview}
+      />
+      )}
+      ItemSeparatorComponent={HSeparator}
+      />
+      
+
+    
+
+    
   )
 }
 

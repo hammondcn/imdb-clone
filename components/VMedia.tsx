@@ -7,7 +7,7 @@ import Votes from "./Votes"
 
 
 const Movie = styled.View`
-  margin-right: 20px;
+
   align-items: center;
 `
 
@@ -34,7 +34,7 @@ interface VMovieProps {
 }
 
 
-const VMovie: React.FC<VMovieProps> = ({
+const VMedia: React.FC<VMovieProps> = ({
   posterPath,
   title,
   voteAverage
@@ -49,4 +49,4 @@ const VMovie: React.FC<VMovieProps> = ({
         </Movie>
 )
 
-export default VMovie
+export default VMedia

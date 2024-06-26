@@ -9,7 +9,6 @@ import Votes from "./Votes"
 const HMovie = styled.View`
   padding: 0 20px;
   flex-direction: row;
-  margin-top: 20px;
 `
 
 const Column = styled.View`
