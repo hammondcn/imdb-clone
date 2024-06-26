@@ -8,8 +8,12 @@ import { NavigationContainer } from '@react-navigation/native'
 import Root from './navigation/Root'
 import { DarkTheme, lightTheme } from './theme'
 import { ThemeProvider } from 'styled-components/native'
+import { QueryClient, QueryClientProvider } from 'react-query'
 
-// SplashScreen.preventAutoHideAsync()
+SplashScreen.preventAutoHideAsync()
+
+
+const queryClient = new QueryClient()
 
 const loadFonts = (fonts) => fonts.map((font) => Font.loadAsync(font))
 const loadImages = (images) =>
@@ -50,10 +54,12 @@ export default function App() {
   }
 
   return (
+    <QueryClientProvider client={queryClient}>
     <ThemeProvider theme={isDark ? DarkTheme : lightTheme}>
       <NavigationContainer>
         <Root />
       </NavigationContainer>
     </ThemeProvider>
+    </QueryClientProvider>
   )
 }

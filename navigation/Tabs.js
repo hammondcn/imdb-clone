@@ -18,6 +18,7 @@ const Tabs = () => {
       }}
       initialRouteName="Tv"
       screenOptions={{
+        unmountOnBlur: true,
         tabBarStyle: {
           backgroundColor: isDark ? COLOR_BLACK : COLOR_GREY,
         },

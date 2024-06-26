@@ -7,6 +7,8 @@ import Slide from '../components/Slide'
 import HMedia from '../components/HMedia'
 import Loader from '../components/Loader'
 import VMedia from '../components/VMedia'
+import { useQuery } from 'react-query'
+import { moviesApi } from '../api'
 
 
 
@@ -72,65 +74,17 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = ({
 }) => {
 
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const [loading, setLoading] = useState(true);
-
-  const [nowPlaying, setNowPlaying] = useState([])
-  const [upComing, setUpComing] = useState([])
-  const [trending, setTrending] = useState([])
-  
-
-  const getNowPlaying = async () => {
-    const { results } = await (
-      await fetch(
-        'https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1',
-        options
-      )
-    ).json();
-
-    setNowPlaying(results);
-
-  }
-  const getUpComing = async () => {
-    const { results } = await (
-      await fetch(
-        'https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1',
-        options
-      )
-    ).json();
-
-    setUpComing(results);
-
-  }
-  const getTrending = async () => {
-    const { results } = await (
-      await fetch(
-        'https://api.themoviedb.org/3/trending/movie/day?language=en-US',
-        options
-      )
-    ).json();
-
-    setTrending(results);
-
-  }
-
-  const getData = async () => {
-    await Promise.all([getNowPlaying(),getUpComing(),getTrending()])
-    setLoading(false)
-  }
+  const {isLoading:nowPlayingLoading, data:nowPlayingData} = useQuery('nowPlaying', moviesApi.nowPlaying)
+  const {isLoading:upComingLoading, data:upComingData} = useQuery('upComing', moviesApi.upComing)
+  const {isLoading:trendingLoading, data:trendingData} = useQuery('trending', moviesApi.trending)
 
 
-  useEffect(() => {
-    getData()
-  }, [])
-
-  const handlrRefresh = async() => {
-    setIsRefreshing(true)
-    await getData()
-    setIsRefreshing(false)
-  }
+  // const handlrRefresh = async() => {
+ 
+  // }
 
 
-
+  const loading = nowPlayingLoading || upComingLoading || trendingLoading
   
   return loading ? (
     <Loader/>
@@ -147,7 +101,7 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = ({
         showsButtons={false}
         showsPagination={false}
       >
-        {nowPlaying.map((movie) => (
+        {(nowPlayingData || {results: []}).results.map((movie) => (
           <Slide
             key={movie.id}
             backdropPath={movie.backdrop_path}
@@ -165,14 +119,14 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = ({
         contentContainerStyle={{paddingEnd: 20}}
         ItemSeparatorComponent={VSeparator}
         keyExtractor={movieKeyExtractor}
-        data={trending}
+        data={trendingData?.results}
         renderItem={renderVMedia}
       />
       <ComingSoonTitle>Upcoming Movies</ComingSoonTitle>
 
       </>}
       
-      data={upComing}
+      data={upComingData?.results}
       renderItem={renderHMedia}
       keyExtractor={movieKeyExtractor}
       ItemSeparatorComponent={HSeparator}
