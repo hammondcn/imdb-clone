@@ -4,6 +4,7 @@ import Poster from './Poster';
 import Votes from './Votes';
 import { TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Movie } from '../api';
 
 const HMovie = styled.View`
 	padding: 0 20px;
@@ -42,6 +43,7 @@ interface HMediaProps {
 	releaseDate?: string;
 	voteAverage?: number;
 	overview: string;
+	fullData: Movie;
 }
 
 const HMedia: React.FC<HMediaProps> = ({
@@ -49,14 +51,15 @@ const HMedia: React.FC<HMediaProps> = ({
 	title,
 	releaseDate,
 	voteAverage,
-	overview
+	overview,
+	fullData
 }) => {
 	const navigation = useNavigation();
 	const goToDetail = () => {
 		navigation.navigate('Stack', {
 			screen: 'Detail',
 			params: {
-				title
+				...fullData
 			}
 		});
 	};

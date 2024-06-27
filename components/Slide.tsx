@@ -10,6 +10,7 @@ import { buildImgPath } from '../utils';
 import Poster from './Poster';
 import Votes from './Votes';
 import { useNavigation } from '@react-navigation/native';
+import { Movie } from '../api';
 
 const View = styled.View`
 	flex: 1;
@@ -49,6 +50,7 @@ interface slideProps {
 	originTitle: string;
 	voteAverage: number;
 	overview: string;
+	fullData: Movie;
 }
 
 const Slide: React.FC<slideProps> = ({
@@ -56,7 +58,8 @@ const Slide: React.FC<slideProps> = ({
 	posterPath,
 	originTitle,
 	voteAverage,
-	overview
+	overview,
+	fullData
 }) => {
 	const isDark = useColorScheme() === 'dark';
 	const navigation = useNavigation();
@@ -65,7 +68,7 @@ const Slide: React.FC<slideProps> = ({
 		navigation.navigate('Stack', {
 			screen: 'Detail',
 			params: {
-				originTitle
+				...fullData
 			}
 		});
 	};

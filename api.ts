@@ -1,5 +1,5 @@
 import { QueryFunction } from 'react-query';
-
+const API_KEY = 'dfb5edcf6eba00b098c29320ec3ac4b7';
 const BASE_URL = 'https://api.themoviedb.org/3/';
 
 const options = {
@@ -10,6 +10,23 @@ const options = {
 			'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkZmI1ZWRjZjZlYmEwMGIwOThjMjkzMjBlYzNhYzRiNyIsIm5iZiI6MTcxOTMxMzk2My41NDkwOTcsInN1YiI6IjY2N2FhNTNjMDhiODY1ZTAzNDVhMzJlZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Wh92Hh3-T5x04QYqJJTwfV5wdMsvl9eSQodXgOQC5jw'
 	}
 };
+
+export interface TV {
+	name: string;
+	original_name: string;
+	origin_country: string[];
+	vote_count: number;
+	backdrop_path: string | null;
+	vote_average: number;
+	genre_ids: number[];
+	id: number;
+	original_language: string;
+	overview: string;
+	poster_path: string | null;
+	first_air_date: string;
+	popularity: number;
+	media_type: string;
+}
 
 export interface Movie {
 	adult: boolean;
@@ -66,6 +83,13 @@ export const moviesApi = {
 			`${BASE_URL}search/movie?include_adult=true&language=en-US&page=1&query=${query}`,
 			options
 		).then((res) => res.json());
+	},
+	detail: ({ queryKey }) => {
+		const [_, query] = queryKey;
+		return fetch(
+			`${BASE_URL}movie/${query}?api_key=${API_KEY}&append_to_response=videos`,
+			options
+		).then((res) => res.json());
 	}
 };
 
@@ -83,10 +107,17 @@ export const tvApi = {
 			res.json()
 		),
 	search: ({ queryKey }) => {
-		console.log(queryKey);
 		const [_, query] = queryKey;
 		return fetch(
 			`${BASE_URL}search/tv?include_adult=true&language=en-US&page=1&query=${query}`,
+			options
+		).then((res) => res.json());
+	},
+	detail: ({ queryKey }) => {
+		const [_, query] = queryKey;
+		console.log(queryKey);
+		return fetch(
+			`${BASE_URL}tv/${query}?api_key=${API_KEY}&append_to_response=videos`,
 			options
 		).then((res) => res.json());
 	}

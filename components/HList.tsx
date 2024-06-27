@@ -38,6 +38,7 @@ const HList: React.FC<HListProps> = ({ title, data, $isTop = false }) => (
 					posterPath={item.poster_path}
 					title={item.title ?? item.original_name}
 					voteAverage={item.vote_average}
+					fullData={item}
 				/>
 			)}
 		/>

@@ -33,6 +33,7 @@ const renderHMedia = ({ item }: { item: Movie }) => (
 		title={item.title}
 		releaseDate={item.release_date}
 		overview={item.overview}
+		fullData={item}
 	/>
 );
 
@@ -93,6 +94,7 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = ({
 								originTitle={movie.title}
 								voteAverage={movie.vote_average}
 								overview={movie.overview}
+								fullData={movie}
 							/>
 						))}
 					</Swiper>
