@@ -6,7 +6,6 @@ import styled from 'styled-components/native';
 import Slide from '../components/Slide';
 import HMedia from '../components/HMedia';
 import Loader from '../components/Loader';
-import VMedia from '../components/VMedia';
 import { useQuery, useQueryClient } from 'react-query';
 import { Movie, MovieResponse, moviesApi } from '../api';
 import HList from '../components/HList';
@@ -26,24 +25,7 @@ const HSeparator = styled.View`
 	height: 20px;
 `;
 
-const VSeparator = styled.View`
-	width: 20px;
-`;
-
-const TrendingScroll = styled.FlatList`
-	padding-start: 20px;
-	padding-top: 10px;
-`;
-
 const movieKeyExtractor = (item: Movie) => item.id + '';
-
-const renderVMedia = ({ item }: { item: Movie }) => (
-	<VMedia
-		posterPath={item.poster_path || ''}
-		title={item.title}
-		voteAverage={item.vote_average}
-	/>
-);
 
 const renderHMedia = ({ item }: { item: Movie }) => (
 	<HMedia
@@ -82,7 +64,7 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = ({
 
 	const handleRefresh = async () => {
 		setIsRefreshing(true);
-		queryClient.refetchQueries(['movies']);
+		await queryClient.refetchQueries(['movies']);
 		setIsRefreshing(false);
 	};
 

@@ -59,7 +59,14 @@ export const moviesApi = {
 	trending: () =>
 		fetch(`${BASE_URL}trending/movie/week?language=en-US`, options).then(
 			(res) => res.json()
-		)
+		),
+	search: ({ queryKey }) => {
+		const [_, query] = queryKey;
+		return fetch(
+			`${BASE_URL}search/movie?include_adult=true&language=en-US&page=1&query=${query}`,
+			options
+		).then((res) => res.json());
+	}
 };
 
 export const tvApi = {
@@ -74,5 +81,13 @@ export const tvApi = {
 	trending: () =>
 		fetch(`${BASE_URL}trending/tv/week?language=en-US`, options).then((res) =>
 			res.json()
-		)
+		),
+	search: ({ queryKey }) => {
+		console.log(queryKey);
+		const [_, query] = queryKey;
+		return fetch(
+			`${BASE_URL}search/tv?include_adult=true&language=en-US&page=1&query=${query}`,
+			options
+		).then((res) => res.json());
+	}
 };
