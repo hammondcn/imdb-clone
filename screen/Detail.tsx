@@ -2,7 +2,13 @@ import { useEffect } from 'react';
 import styled from 'styled-components/native';
 import { Movie, TV, moviesApi, tvApi } from '../api';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Dimensions, StyleSheet } from 'react-native';
+import {
+	Dimensions,
+	Platform,
+	Share,
+	StyleSheet,
+	TouchableOpacity
+} from 'react-native';
 import { buildImgPath } from '../utils';
 import { COLOR_BLACK } from '../color';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -79,11 +85,49 @@ const Detail: React.FC<DetailProps> = ({
 		isMovie ? moviesApi.detail : tvApi.detail
 	);
 
+	const ShareBtn = () => (
+		<TouchableOpacity onPress={shareMedia}>
+			<Ionicons name="share-outline" color="white" size={24}></Ionicons>
+		</TouchableOpacity>
+	);
+
+	const shareMedia = async () => {
+		const isAndroid = Platform.OS === 'android';
+		const homepage = isMovie
+			? `https://www.imdb.com/title/${data.imdb_id}/`
+			: data.homepage;
+		if (isAndroid) {
+			await Share.share({
+				message: `${params.overview}\ncheck it out: ${homepage}`,
+				title:
+					'original_name' in params
+						? params.original_name
+						: params.original_title
+			});
+		} else {
+			await Share.share({
+				title:
+					'original_name' in params
+						? params.original_name
+						: params.original_title,
+				url: homepage
+			});
+		}
+	};
+
 	useEffect(() => {
 		setOptions({
 			title: 'original_title' in params ? 'Movie' : 'TV'
 		});
 	}, []);
+
+	useEffect(() => {
+		if (data) {
+			setOptions({
+				headerRight: () => ShareBtn()
+			});
+		}
+	}, [data]);
 
 	return (
 		<Container>
